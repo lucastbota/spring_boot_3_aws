@@ -1,18 +1,13 @@
 package br.com.energy.lambda.customer.house;
 
 import br.com.energy.lambda.customer.house.external.InvoiceEventQueue;
-import br.com.energy.lambda.customer.house.external.dto.InvoiceDTO;
 import com.amazonaws.services.lambda.runtime.events.S3Event;
 import com.amazonaws.services.lambda.runtime.events.models.s3.S3EventNotification;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import io.quarkus.test.InjectMock;
 import io.quarkus.test.junit.QuarkusTest;
 import jakarta.inject.Inject;
-import org.jetbrains.annotations.NotNull;
-import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
-import org.mockito.ArgumentCaptor;
-import org.mockito.Captor;
 import org.mockito.Mockito;
 import software.amazon.awssdk.core.ResponseBytes;
 import software.amazon.awssdk.services.s3.S3Client;
@@ -40,13 +35,10 @@ public class S3EventProcessorTest {
 
         Mockito.when(s3Client.getObjectAsBytes(Mockito.any(GetObjectRequest.class))).thenReturn(ResponseBytes.fromByteArray(GetObjectResponse.builder().build(), getJsonContent().getBytes(StandardCharsets.UTF_8)));
 
-
         var lambdaResult = s3EventProcessor.handleRequest(s3Event, null);
         assertTrue(lambdaResult.stream().allMatch(d -> d.customerId().equals(1699203015888L)));
     }
 
-
-    @NotNull
     private static S3EventNotification.S3EventNotificationRecord getS3EventNotificationRecord(String jsonContent) {
         return new S3EventNotification.S3EventNotificationRecord("sa-east-1",
                 "criação objeto",
