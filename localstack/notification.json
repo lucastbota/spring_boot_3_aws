@@ -1,0 +1,5 @@
+{
+ "LambdaFunctionConfigurations": [{"LambdaFunctionArn": "arn:aws:lambda:sa-east-1:000000000000:function:CustomerHouse",
+  "Events": ["s3:ObjectCreated:*"]
+ }]
+}
