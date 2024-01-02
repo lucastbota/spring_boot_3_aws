@@ -17,27 +17,31 @@ import java.io.IOException;
 import java.io.OutputStream;
 import java.math.BigDecimal;
 import java.nio.charset.StandardCharsets;
+import java.time.Instant;
 import java.util.Objects;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 
 @Service
 public class InvoiceServiceImpl implements InvoiceService {
+    private final static Logger LOGGER = Logger.getLogger(InvoiceServiceImpl.class.getName());
     @Value("s3://watt-bureau/")
     private Resource s3Bucket;
     @Autowired
     private ObjectMapper objectMapper;
 
     @Override
-    public InvoiceData create(InvoiceDTO dto) {
+    public void create(InvoiceDTO dto) {
         var fiftyCents = 0.50f;
         var total = BigDecimal.valueOf(dto.kwh() * fiftyCents);
-        var data = new InvoiceData(dto.customerId(), dto.kwh(), total);
+        var data = new InvoiceData(Instant.now().toEpochMilli(),dto.customerId(), dto.kwh(), total);
+        LOGGER.log(Level.INFO, "Invoice: {0}", data);
         writeCustomerIntoBucket(data);
-        return data;
     }
 
     @Override
-    public BigDecimal getTotal(Long customerId) {
-        var content = getObject(Objects.toString(customerId));
+    public BigDecimal getTotal(Long id) {
+        var content = getObject(Objects.toString(id));
         try {
             return objectMapper.readValue(content, InvoiceData.class).total();
         } catch (JsonProcessingException e) {
@@ -46,7 +50,7 @@ public class InvoiceServiceImpl implements InvoiceService {
     }
 
     private void writeCustomerIntoBucket(InvoiceData data) {
-        try (OutputStream outputStream = ((S3Resource) s3Bucket.createRelative(Objects.toString(data.customerId()))).getOutputStream()) {
+        try (OutputStream outputStream = ((S3Resource) s3Bucket.createRelative(Objects.toString(data.id()))).getOutputStream()) {
             outputStream.write(objectMapper.writeValueAsBytes(data));
         } catch (IOException e) {
             throw new IOBucketException();

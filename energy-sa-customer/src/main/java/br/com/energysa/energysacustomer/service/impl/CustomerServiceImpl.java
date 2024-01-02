@@ -44,7 +44,7 @@ public class CustomerServiceImpl implements CustomerService {
         }
     }
 
-    private String getObject(String key)   {
+    private String getObject(String key) {
         try {
             return StreamUtils.copyToString(
                     s3Bucket.createRelative(key).getInputStream(),
@@ -54,6 +54,7 @@ public class CustomerServiceImpl implements CustomerService {
             throw new IOBucketException();
         }
     }
+
     private void writeCustomerIntoBucket(CustomerData data) {
         try (OutputStream outputStream = ((S3Resource) s3Bucket.createRelative(Objects.toString(data.id()))).getOutputStream()) {
             outputStream.write(objectMapper.writeValueAsBytes(data));

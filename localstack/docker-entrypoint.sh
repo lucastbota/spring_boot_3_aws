@@ -26,7 +26,17 @@ sleep 30
 aws s3api put-bucket-notification-configuration --bucket customer-bureau --notification-configuration file:///opt/localstack/notification.json --endpoint-url http://localhost:4566
 
 ## Create Parameter Store
-#aws ssm put-parameter --name "energy-sa"  --value "parameter-value"  --type String 
+aws --endpoint-url=http://localhost:4566 ssm put-parameter --name "/config/energy-sa-report/customer.api.id" --type String --value "customer123"
+aws --endpoint-url=http://localhost:4566 ssm put-parameter --name "/config/energy-sa-report/invoice.api.id" --type String --value "invoice123"
+aws --endpoint-url=http://localhost:4566 ssm put-parameter --name "/config/redis/cache.username" --type String --value "cachemaster"
+
+## Create Secret Manager
+aws --endpoint-url=http://localhost:4566 secretsmanager create-secret --name "/secrets/energy-sa-report"   --description "Energy SA external API secrets"  --secret-string file:///opt/localstack/secrets.json
+aws --endpoint-url=http://localhost:4566 secretsmanager describe-secret --secret-id "/secrets/energy-sa-report" 
 
 ## Create SQS
 aws --endpoint-url=http://localhost:4566 sqs create-queue --queue-name kwh-collector
+
+## 
+
+awslocal dynamodb create-table --cli-input-json '{ "TableName": "invoice_report", "KeySchema": [ { "AttributeName": "invoice_id", "KeyType": "HASH" } ], "AttributeDefinitions": [ { "AttributeName": "invoice_id", "AttributeType": "N" } ], "BillingMode": "PAY_PER_REQUEST" }'

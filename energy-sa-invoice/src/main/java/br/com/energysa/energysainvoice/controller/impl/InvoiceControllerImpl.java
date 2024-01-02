@@ -9,10 +9,12 @@ import org.springframework.web.servlet.support.ServletUriComponentsBuilder;
 
 import java.math.BigDecimal;
 import java.net.URI;
+import java.util.logging.Logger;
 
 @RestController
 @RequestMapping("/invoices")
 public class InvoiceControllerImpl implements InvoiceController {
+    private static final Logger LOGGER = Logger.getLogger(InvoiceControllerImpl.class.getName());
     private final InvoiceService invoiceService;
 
     public InvoiceControllerImpl(InvoiceService invoiceService) {
@@ -20,8 +22,9 @@ public class InvoiceControllerImpl implements InvoiceController {
     }
 
     @Override
-    @GetMapping("/{customerId}")
-    public ResponseEntity<BigDecimal> getTotal(@PathVariable("customerId") Long customerId) {
-        return ResponseEntity.ok(invoiceService.getTotal(customerId));
+    @GetMapping("/{id}")
+    public ResponseEntity<BigDecimal> getTotal(@PathVariable("id") Long id) {
+        LOGGER.info(String.format("Invoice id: %s", id));
+        return ResponseEntity.ok(invoiceService.getTotal(id));
     }
 }

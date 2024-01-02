@@ -6,6 +6,6 @@ import br.com.energysa.energysainvoice.dto.InvoiceDTO;
 import java.math.BigDecimal;
 
 public interface InvoiceService {
-    InvoiceData create(InvoiceDTO dto);
-    BigDecimal getTotal(Long customerId);
+    void create(InvoiceDTO dto);
+    BigDecimal getTotal(Long id);
 }
