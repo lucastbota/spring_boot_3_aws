@@ -10,18 +10,44 @@ services:
 
   localstack:
     image: localstack/localstack:2.3.0
+    container_name: localstack
     depends_on:
       - alpine-stack
     ports:
-      - '127.0.0.1:4566:4566'
-      - "127.0.0.1:4510-4559:4510-4559"
+      - "127.0.0.1:4566:4566"            # LocalStack Gateway
+      - "127.0.0.1:4510-4559:4510-4559"  # external services port range
     environment:
       - DOCKER_HOST=unix:///var/run/docker.sock
+      - LOCALSTACK_HOST=localstack # where services are available from other containers
       - DEBUG=1
-      #- INVOICE_SERVICE_URL=invoice-api
-      #- LAMBDA_DOCKER_NETWORK=localcloud
     volumes:
       - ./localstack/:/opt/localstack/
       - ./localstack/docker-entrypoint.sh:/etc/localstack/init/ready.d/init-aws.sh
       - ./tmp/localstack:/tmp/localstack
       - /var/run/docker.sock:/var/run/docker.sock
+
+  jaeger:
+    image: jaegertracing/all-in-one:1.53
+    environment:
+      - COLLECTOR_ZIPKIN_HTTP_PORT=9411
+      - COLLECTOR_OTLP_ENABLED=true
+    ports:
+      - 6831:6831/udp
+      - 6832:6832/udp
+      - 5778:5778
+      - 16686:16686
+      - 14268:14268
+      - 14269:14269
+      - 14250:14250
+      - 9411:9411
+      - 4317:4317
+      - 4318:4318
+
+  prometheus:
+    image: prom/prometheus
+    volumes:
+      - ./prometheus/prometheus.yml:/etc/prometheus/prometheus.yml
+    command:
+      - --config.file=/etc/prometheus/prometheus.yml
+    ports:
+      - 9090:9090

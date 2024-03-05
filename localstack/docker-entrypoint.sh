@@ -28,7 +28,7 @@ aws s3api put-bucket-notification-configuration --bucket customer-bureau --notif
 ## Create Parameter Store
 aws --endpoint-url=http://localhost:4566 ssm put-parameter --name "/config/energy-sa-report/customer.api.id" --type String --value "customer123"
 aws --endpoint-url=http://localhost:4566 ssm put-parameter --name "/config/energy-sa-report/invoice.api.id" --type String --value "invoice123"
-aws --endpoint-url=http://localhost:4566 ssm put-parameter --name "/config/redis/cache.username" --type String --value "cachemaster"
+
 
 ## Create Secret Manager
 aws --endpoint-url=http://localhost:4566 secretsmanager create-secret --name "/secrets/energy-sa-report"   --description "Energy SA external API secrets"  --secret-string file:///opt/localstack/secrets.json

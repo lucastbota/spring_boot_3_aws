@@ -3,6 +3,7 @@ package br.com.energysa.energysacustomer.controller.impl;
 import br.com.energysa.energysacustomer.controller.CustomerController;
 import br.com.energysa.energysacustomer.dto.CustomerDTO;
 import br.com.energysa.energysacustomer.service.CustomerService;
+import io.github.resilience4j.ratelimiter.annotation.RateLimiter;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -20,6 +21,7 @@ public class CustomerControllerImpl implements CustomerController {
     }
 
     @Override
+    @RateLimiter(name="createCustomer")
     @PostMapping
     public ResponseEntity<CustomerDTO> create(@RequestBody CustomerDTO customerDTO) {
         var data = service.create(customerDTO);
@@ -27,6 +29,7 @@ public class CustomerControllerImpl implements CustomerController {
     }
 
     @Override
+    @RateLimiter(name="getCustomer")
     @GetMapping("/{id}")
     public ResponseEntity<CustomerDTO> findById(@PathVariable("id") Long id) {
         var data = service.findById(id);
