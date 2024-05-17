@@ -1,11 +1,13 @@
 package br.com.energysa.energysareport.service.remote;
 
+import br.com.energysa.energysareport.dto.InvoiceDTO;
 import br.com.energysa.energysareport.integration.feign.InvoiceClient;
 import br.com.energysa.energysareport.service.IInvoiceService;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.scheduling.annotation.Async;
 import org.springframework.stereotype.Service;
 
-import java.math.BigDecimal;
+import java.util.concurrent.CompletableFuture;
 
 @Service
 public class InvoiceRemoteService implements IInvoiceService {
@@ -22,7 +24,8 @@ public class InvoiceRemoteService implements IInvoiceService {
     }
 
     @Override
-    public BigDecimal get(Long invoiceId) {
-        return invoiceClient.getTotalByCustomerId(invoiceApiId, invoiceApiSecret, invoiceId);
+    @Async
+    public CompletableFuture<InvoiceDTO> getInvoiceById(Long invoiceId) {
+        return CompletableFuture.completedFuture(invoiceClient.getInvoiceById(invoiceApiId, invoiceApiSecret, invoiceId));
     }
 }

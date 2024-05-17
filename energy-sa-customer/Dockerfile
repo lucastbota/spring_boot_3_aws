@@ -4,7 +4,7 @@ VOLUME /tmp
 
 EXPOSE  8093
 
-ARG EXTRACTED=./target/extracted
+ARG EXTRACTED=./target/energy-sa-customer
 
 
 COPY ${EXTRACTED}/dependencies/ ./

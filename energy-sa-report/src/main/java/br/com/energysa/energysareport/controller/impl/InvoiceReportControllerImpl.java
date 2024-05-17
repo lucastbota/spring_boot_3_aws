@@ -7,22 +7,29 @@ import io.github.resilience4j.ratelimiter.annotation.RateLimiter;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
+import java.util.List;
+
 @RestController
-public class ReportControllerImpl implements ReportController {
+public class InvoiceReportControllerImpl implements ReportController {
 
     private final IReportFacade reportFacade;
 
-    public ReportControllerImpl(IReportFacade reportFacade) {
+    public InvoiceReportControllerImpl(IReportFacade reportFacade) {
         this.reportFacade = reportFacade;
     }
 
     @Override
     @RateLimiter(name = "getReport")
     @GetMapping("/invoices/{invoiceId}/customers/{customerId}")
-    public ResponseEntity<CustomerDataDTO> get(@PathVariable("invoiceId") Long invoiceId, @PathVariable("customerId") Long customerId) {
+    public ResponseEntity<CustomerDataDTO> getBy(@PathVariable("invoiceId") Long invoiceId, @PathVariable("customerId") Long customerId) {
         return ResponseEntity.ok(reportFacade.get(invoiceId, customerId));
+    }
+
+    @Override
+    @GetMapping("/invoices")
+    public ResponseEntity<List<CustomerDataDTO>> getAll() {
+        return ResponseEntity.ok(reportFacade.getAllCustomers());
     }
 }

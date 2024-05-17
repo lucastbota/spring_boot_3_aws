@@ -1,0 +1,26 @@
+version: '3.9'
+
+services:
+  alpine-stack:
+    image: alpine:3.14
+    volumes:
+      - "./localstack:/utils"
+    command: >
+      sed -i -e 's/\r$$//' /utils/docker-entrypoint.sh
+
+  localstack:
+    image: localstack/localstack:2.3.0
+    container_name: localstack
+    depends_on:
+      - alpine-stack
+    ports:
+      - "127.0.0.1:4566:4566"            # LocalStack Gateway
+      - "127.0.0.1:4510-4559:4510-4559"  # external services port range
+    environment:
+      - DOCKER_HOST=unix:///var/run/docker.sock
+      - DEBUG=1
+    volumes:
+      - ./localstack/:/opt/localstack/
+      - ./localstack/docker-entrypoint.sh:/etc/localstack/init/ready.d/init-aws.sh
+      - ./tmp/localstack:/tmp/localstack
+      - /var/run/docker.sock:/var/run/docker.sock

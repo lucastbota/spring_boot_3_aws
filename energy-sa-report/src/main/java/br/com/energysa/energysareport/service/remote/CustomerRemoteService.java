@@ -4,7 +4,10 @@ import br.com.energysa.energysareport.dto.CustomerDTO;
 import br.com.energysa.energysareport.integration.feign.CustomerClient;
 import br.com.energysa.energysareport.service.ICustomerService;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.scheduling.annotation.Async;
 import org.springframework.stereotype.Service;
+
+import java.util.concurrent.CompletableFuture;
 
 @Service
 public class CustomerRemoteService implements ICustomerService {
@@ -21,7 +24,8 @@ public class CustomerRemoteService implements ICustomerService {
     }
 
     @Override
-    public CustomerDTO get(Long customerId) {
-        return customerClient.getByCustomerId(customerApiId, customerApiSecret, customerId);
+    @Async
+    public CompletableFuture<CustomerDTO> getCustomerById(Long customerId) {
+        return CompletableFuture.completedFuture(customerClient.getByCustomerId(customerApiId, customerApiSecret, customerId));
     }
 }
